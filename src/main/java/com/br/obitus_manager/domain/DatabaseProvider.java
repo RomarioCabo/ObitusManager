@@ -1,5 +1,7 @@
 package com.br.obitus_manager.domain;
 
+import com.br.obitus_manager.domain.city.CityRequest;
+import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
@@ -18,4 +20,10 @@ public interface DatabaseProvider {
     List<UserResponse> findAllUsers();
 
     List<StateResponse> findAllStatesByActive(final boolean active);
+
+    CityResponse saveCity(final CityRequest request, final UUID cityId);
+
+    boolean existsCityByNameAndState(String name, UUID stateId);
+
+    List<CityResponse> findAllCitiesByState(final UUID stateId);
 }

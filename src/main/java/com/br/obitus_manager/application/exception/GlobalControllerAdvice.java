@@ -39,7 +39,7 @@ public class GlobalControllerAdvice {
                 .body(errorHttpResponseDto);
     }
 
-    @ExceptionHandler(value = {BadRequestException.class})
+    @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorHttpResponseDto> handleBadRequestException(BadRequestException ex) {
         ErrorHttpResponseDto errorHttpResponseDto = new ErrorHttpResponseDto(
                 BAD_REQUEST.toString(),
@@ -53,7 +53,7 @@ public class GlobalControllerAdvice {
                 .body(errorHttpResponseDto);
     }
 
-    @ExceptionHandler(value = {AuthenticationLocalException.class})
+    @ExceptionHandler(AuthenticationLocalException.class)
     public ResponseEntity<ErrorHttpResponseDto> handleAuthenticationException(AuthenticationLocalException ex) {
         ErrorHttpResponseDto errorHttpResponseDto = new ErrorHttpResponseDto(
                 UNAUTHORIZED.toString(),
@@ -63,6 +63,20 @@ public class GlobalControllerAdvice {
         );
 
         return ResponseEntity.status(UNAUTHORIZED)
+                .contentType(APPLICATION_JSON)
+                .body(errorHttpResponseDto);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorHttpResponseDto> handleEntityNotFoundException(EntityNotFoundException ex) {
+        ErrorHttpResponseDto errorHttpResponseDto = new ErrorHttpResponseDto(
+                NOT_FOUND.toString(),
+                TITLE,
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(NOT_FOUND)
                 .contentType(APPLICATION_JSON)
                 .body(errorHttpResponseDto);
     }

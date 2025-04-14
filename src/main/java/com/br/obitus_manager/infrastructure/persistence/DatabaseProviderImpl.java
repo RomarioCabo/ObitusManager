@@ -1,9 +1,13 @@
 package com.br.obitus_manager.infrastructure.persistence;
 
 import com.br.obitus_manager.domain.DatabaseProvider;
+import com.br.obitus_manager.domain.city.CityRequest;
+import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
+import com.br.obitus_manager.infrastructure.persistence.city.CityEntity;
+import com.br.obitus_manager.infrastructure.persistence.city.CityRepository;
 import com.br.obitus_manager.infrastructure.persistence.state.StateEntity;
 import com.br.obitus_manager.infrastructure.persistence.state.StateRepository;
 import com.br.obitus_manager.infrastructure.persistence.user.UserEntity;
@@ -23,6 +27,7 @@ public class DatabaseProviderImpl implements DatabaseProvider {
 
     private final UserRepository userRepository;
     private final StateRepository stateRepository;
+    private final CityRepository cityRepository;
 
     @Override
     @Transactional
@@ -62,6 +67,31 @@ public class DatabaseProviderImpl implements DatabaseProvider {
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(StateEntity::toModel)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public CityResponse saveCity(final CityRequest request, final UUID cityId) {
+        return stateRepository.findById(request.getIdState())
+                .map(state -> {
+                    CityEntity city = new CityEntity(cityId, state, request);
+                    return cityRepository.saveAndFlush(city).toModel();
+                })
+                .orElse(null);
+    }
+
+    @Override
+    public boolean existsCityByNameAndState(String name, UUID stateId) {
+        return cityRepository.existsByNameAndState(name, stateId);
+    }
+
+    @Override
+    public List<CityResponse> findAllCitiesByState(final UUID stateId) {
+        return Optional.ofNullable(cityRepository.findAllByState(stateId))
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(CityEntity::toModel)
                 .toList();
     }
 }

@@ -57,7 +57,7 @@ public interface UserController {
                     schema = @Schema(implementation = ErrorHttpResponseDto.class))
             })
     @PutMapping(
-            value = "usuario",
+            value = "usuario/{id_usuario}",
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
