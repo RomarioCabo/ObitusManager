@@ -1,8 +1,11 @@
 package com.br.obitus_manager.infrastructure.persistence;
 
 import com.br.obitus_manager.domain.DatabaseProvider;
+import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
+import com.br.obitus_manager.infrastructure.persistence.state.StateEntity;
+import com.br.obitus_manager.infrastructure.persistence.state.StateRepository;
 import com.br.obitus_manager.infrastructure.persistence.user.UserEntity;
 import com.br.obitus_manager.infrastructure.persistence.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import java.util.UUID;
 public class DatabaseProviderImpl implements DatabaseProvider {
 
     private final UserRepository userRepository;
+    private final StateRepository stateRepository;
 
     @Override
     @Transactional
@@ -49,6 +53,15 @@ public class DatabaseProviderImpl implements DatabaseProvider {
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(UserEntity::toModel)
+                .toList();
+    }
+
+    @Override
+    public List<StateResponse> findAllStatesByActive(final boolean active) {
+        return Optional.ofNullable(stateRepository.findAllByActive(active))
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(StateEntity::toModel)
                 .toList();
     }
 }

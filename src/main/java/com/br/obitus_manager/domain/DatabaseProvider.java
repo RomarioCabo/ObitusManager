@@ -1,5 +1,6 @@
 package com.br.obitus_manager.domain;
 
+import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 
@@ -15,4 +16,6 @@ public interface DatabaseProvider {
     UserResponse findUserById(final UUID userId);
 
     List<UserResponse> findAllUsers();
+
+    List<StateResponse> findAllStatesByActive(final boolean active);
 }

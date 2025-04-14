@@ -1,6 +1,6 @@
 package com.br.obitus_manager.infrastructure.persistence.user;
 
-import com.br.obitus_manager.domain.role.Role;
+import com.br.obitus_manager.domain.enums.Role;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 import jakarta.persistence.*;
