@@ -8,3 +8,5 @@ spring:
       username: funeraria_user
       password: funeraria_password
       connection-test-query: SELECT 1
+
+base_url: "http://localhost:8081/"

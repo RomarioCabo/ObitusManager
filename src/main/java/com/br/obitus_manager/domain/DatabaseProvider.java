@@ -2,6 +2,8 @@ package com.br.obitus_manager.domain;
 
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
@@ -26,4 +28,8 @@ public interface DatabaseProvider {
     boolean existsCityByNameAndState(String name, UUID stateId);
 
     List<CityResponse> findAllCitiesByState(final UUID stateId);
+
+    ObituaryNoticeResponse saveObituaryNotice(final ObituaryNoticeRequest request, final UUID obituaryNoticeId);
+
+    byte[] getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId);
 }

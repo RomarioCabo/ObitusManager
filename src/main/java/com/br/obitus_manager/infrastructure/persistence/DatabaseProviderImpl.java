@@ -3,11 +3,15 @@ package com.br.obitus_manager.infrastructure.persistence;
 import com.br.obitus_manager.domain.DatabaseProvider;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 import com.br.obitus_manager.infrastructure.persistence.city.CityEntity;
 import com.br.obitus_manager.infrastructure.persistence.city.CityRepository;
+import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeEntity;
+import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeRepository;
 import com.br.obitus_manager.infrastructure.persistence.state.StateEntity;
 import com.br.obitus_manager.infrastructure.persistence.state.StateRepository;
 import com.br.obitus_manager.infrastructure.persistence.user.UserEntity;
@@ -28,6 +32,7 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     private final UserRepository userRepository;
     private final StateRepository stateRepository;
     private final CityRepository cityRepository;
+    private final ObituaryNoticeRepository obituaryNoticeRepository;
 
     @Override
     @Transactional
@@ -93,5 +98,21 @@ public class DatabaseProviderImpl implements DatabaseProvider {
                 .stream()
                 .map(CityEntity::toModel)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public ObituaryNoticeResponse saveObituaryNotice(final ObituaryNoticeRequest request, final UUID obituaryNoticeId) {
+        return cityRepository.findById(request.getIdCity())
+                .map(cityEntity -> {
+                    ObituaryNoticeEntity obituaryNoticeEntity = new ObituaryNoticeEntity(obituaryNoticeId, cityEntity, request);
+                    return obituaryNoticeRepository.saveAndFlush(obituaryNoticeEntity).toModel();
+                })
+                .orElse(null);
+    }
+
+    @Override
+    public byte[] getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId) {
+        return obituaryNoticeRepository.findById(obituaryNoticeId).map(ObituaryNoticeEntity::getPhoto).orElse(null);
     }
 }
