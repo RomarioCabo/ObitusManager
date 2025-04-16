@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -22,7 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class ObituaryNoticeControllerImpl  extends ControllerUtils implements ObituaryNoticeController {
+public class ObituaryNoticeControllerImpl extends ControllerUtils implements ObituaryNoticeController {
 
     private final ObituaryNoticeService obituaryNoticeService;
 
@@ -60,5 +62,10 @@ public class ObituaryNoticeControllerImpl  extends ControllerUtils implements Ob
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<List<ObituaryNoticeResponse>> find(String nameDeceased, UUID idCity, LocalDate dateDeceased) {
+        return ResponseEntity.ok(obituaryNoticeService.find(nameDeceased, idCity, dateDeceased));
     }
 }

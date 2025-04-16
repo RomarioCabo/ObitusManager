@@ -7,8 +7,10 @@ import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface DatabaseProvider {
@@ -32,4 +34,8 @@ public interface DatabaseProvider {
     ObituaryNoticeResponse saveObituaryNotice(final ObituaryNoticeRequest request, final UUID obituaryNoticeId);
 
     byte[] getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId);
+
+    List<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
+                                                    final Map<String, Map<String, Object>> advancedFilters,
+                                                    final Pageable pageable);
 }

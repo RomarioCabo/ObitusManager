@@ -10,6 +10,7 @@ import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 import com.br.obitus_manager.infrastructure.persistence.city.CityEntity;
 import com.br.obitus_manager.infrastructure.persistence.city.CityRepository;
+import com.br.obitus_manager.infrastructure.persistence.custom.CustomRepository;
 import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeEntity;
 import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeRepository;
 import com.br.obitus_manager.infrastructure.persistence.state.StateEntity;
@@ -17,22 +18,26 @@ import com.br.obitus_manager.infrastructure.persistence.state.StateRepository;
 import com.br.obitus_manager.infrastructure.persistence.user.UserEntity;
 import com.br.obitus_manager.infrastructure.persistence.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 public class DatabaseProviderImpl implements DatabaseProvider {
 
+    @Value("${base_url}")
+    private String baseUrl;
+
     private final UserRepository userRepository;
     private final StateRepository stateRepository;
     private final CityRepository cityRepository;
     private final ObituaryNoticeRepository obituaryNoticeRepository;
+    private final CustomRepository customRepository;
 
     @Override
     @Transactional
@@ -106,7 +111,7 @@ public class DatabaseProviderImpl implements DatabaseProvider {
         return cityRepository.findById(request.getIdCity())
                 .map(cityEntity -> {
                     ObituaryNoticeEntity obituaryNoticeEntity = new ObituaryNoticeEntity(obituaryNoticeId, cityEntity, request);
-                    return obituaryNoticeRepository.saveAndFlush(obituaryNoticeEntity).toModel();
+                    return obituaryNoticeRepository.saveAndFlush(obituaryNoticeEntity).toModel(baseUrl);
                 })
                 .orElse(null);
     }
@@ -114,5 +119,20 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     @Override
     public byte[] getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId) {
         return obituaryNoticeRepository.findById(obituaryNoticeId).map(ObituaryNoticeEntity::getPhoto).orElse(null);
+    }
+
+    @Override
+    public List<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
+                                                           final Map<String, Map<String, Object>> advancedFilters,
+                                                           final Pageable pageable) {
+        final Page<ObituaryNoticeEntity> obituaryNoticeEntities
+                = customRepository.findWithFilters(ObituaryNoticeEntity.class, filters, advancedFilters, pageable);
+
+        return Optional.ofNullable(obituaryNoticeEntities)
+                .map(page -> page.getContent()
+                        .stream()
+                        .map(entity -> entity.toModel(baseUrl))
+                        .toList())
+                .orElse(null);
     }
 }

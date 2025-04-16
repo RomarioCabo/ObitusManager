@@ -3,6 +3,7 @@ package com.br.obitus_manager.application.controller;
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +14,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -96,4 +99,18 @@ public interface ObituaryNoticeController {
     )
     @GetMapping("/nota_falecimento/{obituaryNoticeId}/foto")
     ResponseEntity<byte[]> getPhoto(@PathVariable UUID obituaryNoticeId);
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "Nomes encontrados.",
+            content = {@Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    array = @ArraySchema(schema = @Schema(implementation = ObituaryNoticeResponse.class)))
+            })
+    @GetMapping(value = "/notas_falecimento", produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<ObituaryNoticeResponse>> find(
+            @RequestParam(required = false, name = "nome_falecido") String nameDeceased,
+            @RequestParam(required = false, name = "id_cidade") UUID idCity,
+            @RequestParam(required = false, name = "data_falecimento") LocalDate dateDeceased
+    );
 }

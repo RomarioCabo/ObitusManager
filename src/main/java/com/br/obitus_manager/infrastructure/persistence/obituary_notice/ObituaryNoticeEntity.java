@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -23,9 +22,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "notas_falecimento")
 public class ObituaryNoticeEntity {
-
-    @Value("${base_url}")
-    private String baseUrl;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -71,7 +67,7 @@ public class ObituaryNoticeEntity {
         }
     }
 
-    public String getUrlImageBase64() {
+    public String getUrlImageBase64(final String baseUrl) {
         if (this.photo != null && this.photo.length > 0) {
             return baseUrl.concat("api/v1/nota_falecimento/").concat(this.id.toString()).concat("/foto");
         }
@@ -91,7 +87,7 @@ public class ObituaryNoticeEntity {
         this.setPhotoBase64(request.getImageBase64());
     }
 
-    public ObituaryNoticeResponse toModel() {
+    public ObituaryNoticeResponse toModel(final String baseUrl) {
         return ObituaryNoticeResponse.builder()
                 .idObituaryNotice(this.id)
                 .nameDeceased(this.nameDeceased)
@@ -101,7 +97,7 @@ public class ObituaryNoticeEntity {
                 .burialLocation(this.burialLocation)
                 .dateTimeBurial(this.dateTimeBurial)
                 .briefBiographyDeceased(this.briefBiographyDeceased)
-                .urlImage(this.getUrlImageBase64())
+                .urlImage(this.getUrlImageBase64(baseUrl))
                 .build();
     }
 }
