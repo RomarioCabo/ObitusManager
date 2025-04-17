@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface StateService {
 
-    List<StateResponse> findAllStatesByActive(final boolean active);
+    List<StateResponse> findAllStatesByActive(final Boolean active);
 }

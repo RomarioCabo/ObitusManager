@@ -34,5 +34,5 @@ public interface StateController {
                     schema = @Schema(implementation = ErrorHttpResponseDto.class))
             })
     @GetMapping(value = "estados", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<StateResponse>> findAllStatesByActive(@RequestParam(required = false, defaultValue = "true", name = "ativo") final boolean active);
+    ResponseEntity<List<StateResponse>> findAllStatesByActive(@RequestParam(required = false, name = "ativo") final Boolean active);
 }

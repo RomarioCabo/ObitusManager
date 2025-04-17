@@ -22,7 +22,7 @@ public class StateControllerImpl implements StateController {
     private final StateService stateService;
 
     @Override
-    public ResponseEntity<List<StateResponse>> findAllStatesByActive(boolean active) {
+    public ResponseEntity<List<StateResponse>> findAllStatesByActive(Boolean active) {
         List<StateResponse> states = stateService.findAllStatesByActive(active);
 
         log.info("States: {}", states);

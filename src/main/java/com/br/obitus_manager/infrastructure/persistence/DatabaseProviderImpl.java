@@ -72,12 +72,18 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     }
 
     @Override
-    public List<StateResponse> findAllStatesByActive(final boolean active) {
-        return Optional.ofNullable(stateRepository.findAllByActive(active))
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(StateEntity::toModel)
-                .toList();
+    public List<StateResponse> findAllStates(final Map<String, Object> filters,
+                                             final Map<String, Map<String, Object>> advancedFilters,
+                                             final Pageable pageable) {
+        final Page<StateEntity> stateEntities
+                = customRepository.findWithFilters(StateEntity.class, filters, advancedFilters, pageable);
+
+        return Optional.ofNullable(stateEntities)
+                .map(page -> page.getContent()
+                        .stream()
+                        .map(StateEntity::toModel)
+                        .toList())
+                .orElse(null);
     }
 
     @Override

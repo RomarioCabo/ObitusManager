@@ -23,7 +23,9 @@ public interface DatabaseProvider {
 
     List<UserResponse> findAllUsers();
 
-    List<StateResponse> findAllStatesByActive(final boolean active);
+    List<StateResponse> findAllStates(final Map<String, Object> filters,
+                                      final Map<String, Map<String, Object>> advancedFilters,
+                                      final Pageable pageable);
 
     CityResponse saveCity(final CityRequest request, final UUID cityId);
 
