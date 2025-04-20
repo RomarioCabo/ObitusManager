@@ -5,6 +5,7 @@ import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -69,6 +71,25 @@ public class DatabaseProviderImpl implements DatabaseProvider {
                 .stream()
                 .map(UserEntity::toModel)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public List<StateResponse> saveAllStates(final List<StateRequest> stateRequests) {
+        Map<UUID, Boolean> activeById = stateRequests.stream()
+                .collect(Collectors.toMap(StateRequest::getId, StateRequest::getActive));
+
+        List<StateEntity> updatedStates = stateRepository.findAllByIds(new ArrayList<>(activeById.keySet()))
+                .stream()
+                .peek(state -> {
+                    Boolean newActive = activeById.get(state.getId());
+                    if (newActive != null) state.setActive(newActive);
+                })
+                .collect(Collectors.toList());
+
+        return stateRepository.saveAll(updatedStates).stream()
+                .map(StateEntity::toModel)
+                .collect(Collectors.toList());
     }
 
     @Override

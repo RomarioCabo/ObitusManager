@@ -1,6 +1,7 @@
 package com.br.obitus_manager.application.controller.impl;
 
 import com.br.obitus_manager.application.controller.StateController;
+import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.state.service.StateService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ import java.util.List;
 public class StateControllerImpl implements StateController {
 
     private final StateService stateService;
+
+    @Override
+    public ResponseEntity<List<StateResponse>> saveAllStates(List<StateRequest> stateRequests) {
+        return ResponseEntity.ok(stateService.saveAllStates(stateRequests));
+    }
 
     @Override
     public ResponseEntity<List<StateResponse>> findAllStatesByActive(Boolean active) {

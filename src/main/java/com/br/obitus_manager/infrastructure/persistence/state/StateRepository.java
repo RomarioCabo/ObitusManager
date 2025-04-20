@@ -16,6 +16,6 @@ public interface StateRepository extends JpaRepository<StateEntity, UUID> {
     @Query("SELECT state FROM StateEntity state WHERE state.id = :idState")
     Optional<StateEntity> findById(UUID idState);
 
-    @Query("SELECT state FROM StateEntity state WHERE state.active = :active")
-    List<StateEntity> findAllByActive(boolean active);
+    @Query("SELECT state FROM StateEntity state WHERE state.id IN :ids")
+    List<StateEntity> findAllByIds(List<UUID> ids);
 }

@@ -4,6 +4,7 @@ import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
@@ -22,6 +23,8 @@ public interface DatabaseProvider {
     UserResponse findUserById(final UUID userId);
 
     List<UserResponse> findAllUsers();
+
+    List<StateResponse> saveAllStates(final List<StateRequest> stateRequests);
 
     List<StateResponse> findAllStates(final Map<String, Object> filters,
                                       final Map<String, Map<String, Object>> advancedFilters,

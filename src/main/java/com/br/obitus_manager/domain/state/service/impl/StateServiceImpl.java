@@ -1,6 +1,7 @@
 package com.br.obitus_manager.domain.state.service.impl;
 
 import com.br.obitus_manager.domain.DatabaseProvider;
+import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.state.service.StateService;
 import com.br.obitus_manager.domain.util.PagedUtil;
@@ -19,6 +20,11 @@ public class StateServiceImpl implements StateService {
 
     private final PagedUtil pagedUtil;
     private final DatabaseProvider databaseProvider;
+
+    @Override
+    public List<StateResponse> saveAllStates(final List<StateRequest> stateRequests) {
+        return databaseProvider.saveAllStates(stateRequests);
+    }
 
     @Override
     public List<StateResponse> findAllStatesByActive(final Boolean active) {

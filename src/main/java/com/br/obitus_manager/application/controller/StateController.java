@@ -1,6 +1,7 @@
 package com.br.obitus_manager.application.controller;
 
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
+import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -18,6 +21,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Tags(@Tag(name = "Estados", description = "Estados REST Controller"))
 public interface StateController {
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "Estados(s) atualizados",
+            content = {@Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    array = @ArraySchema(schema = @Schema(implementation = StateResponse.class)))
+            })
+    @PutMapping(value = "estados", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    ResponseEntity<List<StateResponse>> saveAllStates(@RequestBody List<StateRequest> stateRequests);
 
     @ApiResponse(
             responseCode = "200",
