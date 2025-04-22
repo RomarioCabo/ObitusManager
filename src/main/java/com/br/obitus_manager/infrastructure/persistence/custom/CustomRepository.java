@@ -10,6 +10,7 @@ public interface CustomRepository {
             final Class<T> clazz,
             final Map<String, Object> filters,
             final Map<String, Map<String, Object>> subFilters,
-            final Pageable pageable
+            final Pageable pageable,
+            final String nameForOrderBy
     );
 }

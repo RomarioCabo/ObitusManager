@@ -95,9 +95,9 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     @Override
     public List<StateResponse> findAllStates(final Map<String, Object> filters,
                                              final Map<String, Map<String, Object>> advancedFilters,
-                                             final Pageable pageable) {
+                                             final Pageable pageable, final String nameForOrderBy) {
         final Page<StateEntity> stateEntities
-                = customRepository.findWithFilters(StateEntity.class, filters, advancedFilters, pageable);
+                = customRepository.findWithFilters(StateEntity.class, filters, advancedFilters, pageable, nameForOrderBy);
 
         return Optional.ofNullable(stateEntities)
                 .map(page -> page.getContent()
@@ -151,9 +151,9 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     @Override
     public List<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
                                                            final Map<String, Map<String, Object>> advancedFilters,
-                                                           final Pageable pageable) {
+                                                           final Pageable pageable, final String nameForOrderBy) {
         final Page<ObituaryNoticeEntity> obituaryNoticeEntities
-                = customRepository.findWithFilters(ObituaryNoticeEntity.class, filters, advancedFilters, pageable);
+                = customRepository.findWithFilters(ObituaryNoticeEntity.class, filters, advancedFilters, pageable, nameForOrderBy);
 
         return Optional.ofNullable(obituaryNoticeEntities)
                 .map(page -> page.getContent()

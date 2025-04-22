@@ -32,6 +32,6 @@ public class StateServiceImpl implements StateService {
         Optional.ofNullable(active).ifPresent(id -> filters.put("active", active));
         final Pageable pageable = pagedUtil.getPageable(null, null);
 
-        return databaseProvider.findAllStates(filters, null, pageable);
+        return databaseProvider.findAllStates(filters, null, pageable, "acronym");
     }
 }

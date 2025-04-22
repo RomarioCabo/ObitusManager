@@ -43,7 +43,7 @@ public class ObituaryNoticeServiceImpl implements ObituaryNoticeService {
 
         final Pageable pageable = pagedUtil.getPageable(null, null);
 
-        return databaseProvider.findObituaryNotice(filters, buildAdvancedFilters(idCity), pageable);
+        return databaseProvider.findObituaryNotice(filters, buildAdvancedFilters(idCity), pageable, "nameDeceased");
     }
 
     private static Map<String, Map<String, Object>> buildAdvancedFilters(final UUID idCity) {

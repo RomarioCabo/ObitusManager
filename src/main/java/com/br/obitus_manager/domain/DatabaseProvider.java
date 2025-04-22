@@ -28,7 +28,7 @@ public interface DatabaseProvider {
 
     List<StateResponse> findAllStates(final Map<String, Object> filters,
                                       final Map<String, Map<String, Object>> advancedFilters,
-                                      final Pageable pageable);
+                                      final Pageable pageable, final String nameForOrderBy);
 
     CityResponse saveCity(final CityRequest request, final UUID cityId);
 
@@ -42,5 +42,5 @@ public interface DatabaseProvider {
 
     List<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
                                                     final Map<String, Map<String, Object>> advancedFilters,
-                                                    final Pageable pageable);
+                                                    final Pageable pageable, final String nameForOrderBy);
 }

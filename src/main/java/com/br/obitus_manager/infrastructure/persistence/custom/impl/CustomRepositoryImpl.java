@@ -2,6 +2,7 @@ package com.br.obitus_manager.infrastructure.persistence.custom.impl;
 
 import com.br.obitus_manager.infrastructure.persistence.custom.CustomRepository;
 import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeEntity;
+import com.br.obitus_manager.infrastructure.persistence.state.StateEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -24,7 +25,7 @@ public class CustomRepositoryImpl implements CustomRepository {
 
     private final Set<String> VALUES_FOR_LIKE = Set.of(NAME_DECEASED_ENTITY_KEY);
 
-    private final Set<Class<?>> CLASSES_FOR_ORDER_BY = Set.of(ObituaryNoticeEntity.class);
+    private final Set<Class<?>> CLASSES_FOR_ORDER_BY = Set.of(ObituaryNoticeEntity.class, StateEntity.class);
 
     @Override
     @Transactional(readOnly = true)
@@ -32,7 +33,8 @@ public class CustomRepositoryImpl implements CustomRepository {
             final Class<T> clazz,
             final Map<String, Object> filters,
             final Map<String, Map<String, Object>> subFilters,
-            final Pageable pageable
+            final Pageable pageable,
+            final String nameForOrderBy
     ) {
         final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(clazz);
@@ -40,7 +42,7 @@ public class CustomRepositoryImpl implements CustomRepository {
 
         final List<Predicate> predicates = buildPredicates(root, filters, subFilters, criteriaBuilder);
         criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-        buildOrderBy(clazz, root, criteriaQuery, criteriaBuilder);
+        buildOrderBy(clazz, root, criteriaQuery, criteriaBuilder, nameForOrderBy);
 
         final TypedQuery<T> typedQuery = createTypedQuery(criteriaQuery, pageable);
 
@@ -74,9 +76,9 @@ public class CustomRepositoryImpl implements CustomRepository {
     }
 
     private <T> void buildOrderBy(final Class<T> clazz, final Root<T> root, final CriteriaQuery<T> criteriaQuery,
-                                  final CriteriaBuilder criteriaBuilder) {
+                                  final CriteriaBuilder criteriaBuilder, final String nameForOrderBy) {
         if (CLASSES_FOR_ORDER_BY.contains(clazz)) {
-            criteriaQuery.orderBy(criteriaBuilder.asc(root.get(NAME_DECEASED_ENTITY_KEY)));
+            criteriaQuery.orderBy(criteriaBuilder.asc(root.get(nameForOrderBy)));
         }
     }
 
