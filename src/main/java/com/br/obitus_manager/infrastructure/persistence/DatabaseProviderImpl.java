@@ -124,12 +124,18 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     }
 
     @Override
-    public List<CityResponse> findAllCitiesByState(final UUID stateId) {
-        return Optional.ofNullable(cityRepository.findAllByState(stateId))
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(CityEntity::toModel)
-                .toList();
+    public List<CityResponse> findAllCities(final Map<String, Object> filters,
+                                            final Map<String, Map<String, Object>> advancedFilters,
+                                            final Pageable pageable, final String nameForOrderBy) {
+        final Page<CityEntity> cityEntities
+                = customRepository.findWithFilters(CityEntity.class, filters, advancedFilters, pageable, nameForOrderBy);
+
+        return Optional.ofNullable(cityEntities)
+                .map(page -> page.getContent()
+                        .stream()
+                        .map(CityEntity::toModel)
+                        .toList())
+                .orElse(null);
     }
 
     @Override

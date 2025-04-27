@@ -1,5 +1,6 @@
 package com.br.obitus_manager.infrastructure.persistence.custom.impl;
 
+import com.br.obitus_manager.infrastructure.persistence.city.CityEntity;
 import com.br.obitus_manager.infrastructure.persistence.custom.CustomRepository;
 import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeEntity;
 import com.br.obitus_manager.infrastructure.persistence.state.StateEntity;
@@ -25,7 +26,8 @@ public class CustomRepositoryImpl implements CustomRepository {
 
     private final Set<String> VALUES_FOR_LIKE = Set.of(NAME_DECEASED_ENTITY_KEY);
 
-    private final Set<Class<?>> CLASSES_FOR_ORDER_BY = Set.of(ObituaryNoticeEntity.class, StateEntity.class);
+    private final Set<Class<?>> CLASSES_FOR_ORDER_BY = Set.of(ObituaryNoticeEntity.class, StateEntity.class,
+            CityEntity.class);
 
     @Override
     @Transactional(readOnly = true)

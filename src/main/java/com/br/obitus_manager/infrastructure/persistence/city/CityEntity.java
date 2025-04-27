@@ -41,6 +41,7 @@ public class CityEntity {
         return CityResponse.builder()
                 .id(this.id)
                 .name(this.name)
+                .state(this.stateEntity.toModel())
                 .build();
     }
 }

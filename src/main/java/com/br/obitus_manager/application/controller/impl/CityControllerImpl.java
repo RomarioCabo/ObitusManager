@@ -50,7 +50,7 @@ public class CityControllerImpl extends ControllerUtils implements CityControlle
     public ResponseEntity<List<CityResponse>> findAllCategoriesByIdUser(UUID idState) {
         log.info("get city by state: {}", idState);
 
-        List<CityResponse> response = cityService.findAllCitiesByState(idState);
+        List<CityResponse> response = cityService.findAllCities(idState);
 
         log.info("cities {}", response);
 

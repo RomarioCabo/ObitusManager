@@ -1,5 +1,6 @@
 package com.br.obitus_manager.domain.city;
 
+import com.br.obitus_manager.domain.state.StateResponse;
 import lombok.*;
 
 import java.util.UUID;
@@ -13,4 +14,5 @@ import java.util.UUID;
 public class CityResponse {
     private UUID id;
     private String name;
+    private StateResponse state;
 }

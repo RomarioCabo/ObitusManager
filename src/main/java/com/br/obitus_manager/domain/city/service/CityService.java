@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface CityService {
     CityResponse upsert(UUID cityId, CityRequest request);
 
-    List<CityResponse> findAllCitiesByState(final UUID stateId);
+    List<CityResponse> findAllCities(final UUID stateId);
 }

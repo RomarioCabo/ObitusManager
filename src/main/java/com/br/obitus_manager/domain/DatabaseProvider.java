@@ -34,7 +34,9 @@ public interface DatabaseProvider {
 
     boolean existsCityByNameAndState(String name, UUID stateId);
 
-    List<CityResponse> findAllCitiesByState(final UUID stateId);
+    List<CityResponse> findAllCities(final Map<String, Object> filters,
+                                     final Map<String, Map<String, Object>> advancedFilters,
+                                     final Pageable pageable, final String nameForOrderBy);
 
     ObituaryNoticeResponse saveObituaryNotice(final ObituaryNoticeRequest request, final UUID obituaryNoticeId);
 

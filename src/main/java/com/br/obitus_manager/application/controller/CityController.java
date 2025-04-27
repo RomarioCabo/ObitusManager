@@ -94,5 +94,5 @@ public interface CityController {
                     mediaType = APPLICATION_JSON_VALUE,
                     array = @ArraySchema(schema = @Schema(implementation = CityResponse.class)))})
     @GetMapping(value = "cidades", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<CityResponse>> findAllCategoriesByIdUser(@RequestParam(name = "id_estado") UUID idState);
+    ResponseEntity<List<CityResponse>> findAllCategoriesByIdUser(@RequestParam(name = "id_estado", required = false) UUID idState);
 }
