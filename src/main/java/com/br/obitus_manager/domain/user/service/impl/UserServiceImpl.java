@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
             validateComplexityPassword(request.getPassword());
         }
 
-        validateUserExistenceByEmail(request.getEmail());
+        validateUserExistenceByEmail(userId, request.getEmail());
 
         UserResponse userResponseFromDb = findById(currentSessionUserId, userId);
 
@@ -66,10 +66,14 @@ public class UserServiceImpl implements UserService {
         return databaseProvider.findUserByEmail(email);
     }
 
-    private void validateUserExistenceByEmail(final String email) {
-        Optional.ofNullable(findByEmail(email)).ifPresent(user -> {
-            throw new BadRequestException(String.format("Usuário com o e-mail: %s já existe!", user.getEmail()));
-        });
+    private void validateUserExistenceByEmail(final UUID userId, final String email) {
+        boolean shouldValidatePassword = (userId == null) || (email != null);
+
+        if (shouldValidatePassword) {
+            Optional.ofNullable(findByEmail(email)).ifPresent(user -> {
+                throw new BadRequestException(String.format("Usuário com o e-mail: %s já existe!", user.getEmail()));
+            });
+        }
     }
 
     private void validateComplexityPassword(final String password) {
