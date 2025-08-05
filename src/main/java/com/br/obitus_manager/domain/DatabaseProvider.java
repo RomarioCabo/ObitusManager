@@ -4,6 +4,7 @@ import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import com.br.obitus_manager.domain.otp.OtpDto;
 import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface DatabaseProvider {
@@ -45,4 +47,10 @@ public interface DatabaseProvider {
     List<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
                                                     final Map<String, Map<String, Object>> advancedFilters,
                                                     final Pageable pageable, final String nameForOrderBy);
+
+    OtpDto saveOtp(String email, String hash);
+
+    Optional<OtpDto> findTopByEmailOrderByCreatedAtDesc(String email);
+
+    Optional<OtpDto> findByEmailAndCodeHash(String email, String codeHash);
 }

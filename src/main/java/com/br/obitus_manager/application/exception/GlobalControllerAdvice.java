@@ -24,6 +24,7 @@ public class GlobalControllerAdvice {
 
     private final MessageSource messageSource;
     private final static String TITLE = "Ops! Ocorreu um erro";
+    private final static String OTP_RESPONSE = "OTP Response";
 
     @ExceptionHandler(value = {Exception.class, RuntimeException.class})
     public ResponseEntity<ErrorHttpResponseDto> handleRuntimeException(Exception ex) {
@@ -96,6 +97,20 @@ public class GlobalControllerAdvice {
                 BAD_REQUEST.toString(),
                 TITLE,
                 errors.toString(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(BAD_REQUEST)
+                .contentType(APPLICATION_JSON)
+                .body(errorHttpResponseDto);
+    }
+
+    @ExceptionHandler(OTPAlreadySentException.class)
+    public ResponseEntity<ErrorHttpResponseDto> handleOTPAlreadySentException(OTPAlreadySentException ex) {
+        ErrorHttpResponseDto errorHttpResponseDto = new ErrorHttpResponseDto(
+                BAD_REQUEST.toString(),
+                OTP_RESPONSE,
+                ex.getMessage(),
                 LocalDateTime.now()
         );
 

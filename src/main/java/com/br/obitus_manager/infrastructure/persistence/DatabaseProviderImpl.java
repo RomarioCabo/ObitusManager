@@ -5,6 +5,7 @@ import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import com.br.obitus_manager.domain.otp.OtpDto;
 import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
@@ -14,6 +15,8 @@ import com.br.obitus_manager.infrastructure.persistence.city.CityRepository;
 import com.br.obitus_manager.infrastructure.persistence.custom.CustomRepository;
 import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeEntity;
 import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeRepository;
+import com.br.obitus_manager.infrastructure.persistence.otp.OtpEntity;
+import com.br.obitus_manager.infrastructure.persistence.otp.OtpRepository;
 import com.br.obitus_manager.infrastructure.persistence.state.StateEntity;
 import com.br.obitus_manager.infrastructure.persistence.state.StateRepository;
 import com.br.obitus_manager.infrastructure.persistence.user.UserEntity;
@@ -25,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +44,7 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     private final CityRepository cityRepository;
     private final ObituaryNoticeRepository obituaryNoticeRepository;
     private final CustomRepository customRepository;
+    private final OtpRepository otpRepository;
 
     @Override
     @Transactional
@@ -167,5 +172,31 @@ public class DatabaseProviderImpl implements DatabaseProvider {
                         .map(entity -> entity.toModel(baseUrl))
                         .toList())
                 .orElse(null);
+    }
+
+    @Override
+    public OtpDto saveOtp(String email, String hash) {
+        OtpEntity otpEntity = OtpEntity.builder()
+                .email(email)
+                .codeHash(hash)
+                .createdAt(LocalDateTime.now())
+                .used(false)
+                .attempts(0)
+                .build();
+
+        final OtpEntity createdOtp = otpRepository.saveAndFlush(otpEntity);
+        return createdOtp.toDto();
+    }
+
+    @Override
+    public Optional<OtpDto> findTopByEmailOrderByCreatedAtDesc(String email) {
+        return otpRepository.findTopByEmailOrderByCreatedAtDesc(email)
+                .map(OtpEntity::toDto);
+    }
+
+    @Override
+    public Optional<OtpDto> findByEmailAndCodeHash(String email, String codeHash) {
+        return otpRepository.findByEmailAndCodeHash(email, codeHash)
+                .map(OtpEntity::toDto);
     }
 }
