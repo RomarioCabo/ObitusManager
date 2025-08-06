@@ -1,5 +1,8 @@
 package com.br.obitus_manager.domain.util;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Util {
 
     public static String maskEmail(String email) {
@@ -16,5 +19,12 @@ public class Util {
         }
 
         return username.charAt(0) + "***" + "@" + domain;
+    }
+
+    public static String formatterDate(LocalDateTime localDateTime, String patter) {
+        if (localDateTime == null) return null;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(patter);
+        return localDateTime.format(formatter);
     }
 }

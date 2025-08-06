@@ -1,6 +1,7 @@
 package com.br.obitus_manager.infrastructure.persistence;
 
 import com.br.obitus_manager.domain.DatabaseProvider;
+import com.br.obitus_manager.domain.anti_flood.AntiFloodDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
@@ -10,6 +11,8 @@ import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
+import com.br.obitus_manager.infrastructure.persistence.anti_flood.AntiFloodEntity;
+import com.br.obitus_manager.infrastructure.persistence.anti_flood.AntiFloodRepository;
 import com.br.obitus_manager.infrastructure.persistence.city.CityEntity;
 import com.br.obitus_manager.infrastructure.persistence.city.CityRepository;
 import com.br.obitus_manager.infrastructure.persistence.custom.CustomRepository;
@@ -45,6 +48,7 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     private final ObituaryNoticeRepository obituaryNoticeRepository;
     private final CustomRepository customRepository;
     private final OtpRepository otpRepository;
+    private final AntiFloodRepository antiFloodRepository;
 
     @Override
     @Transactional
@@ -175,28 +179,51 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     }
 
     @Override
-    public OtpDto saveOtp(String email, String hash) {
+    @Transactional
+    public void saveOtp(final UUID idOtp, final String email, final String hash, final LocalDateTime createdAt,
+                        final boolean used) {
         OtpEntity otpEntity = OtpEntity.builder()
+                .id(idOtp)
                 .email(email)
                 .codeHash(hash)
-                .createdAt(LocalDateTime.now())
-                .used(false)
-                .attempts(0)
+                .createdAt(createdAt)
+                .used(used)
                 .build();
 
-        final OtpEntity createdOtp = otpRepository.saveAndFlush(otpEntity);
-        return createdOtp.toDto();
+        otpRepository.saveAndFlush(otpEntity);
     }
 
     @Override
-    public Optional<OtpDto> findTopByEmailOrderByCreatedAtDesc(String email) {
+    public Optional<OtpDto> findTopByEmailOrderByCreatedAtDesc(final String email) {
         return otpRepository.findTopByEmailOrderByCreatedAtDesc(email)
                 .map(OtpEntity::toDto);
     }
 
     @Override
-    public Optional<OtpDto> findByEmailAndCodeHash(String email, String codeHash) {
+    public Optional<OtpDto> findByEmailAndCodeHash(final String email, final String codeHash) {
         return otpRepository.findByEmailAndCodeHash(email, codeHash)
                 .map(OtpEntity::toDto);
+    }
+
+    @Override
+    public void saveAntiFlood(final UUID id, final String email, final int attempts, final LocalDateTime blockStart,
+                              final LocalDateTime blockEnd, int blockedLevel) {
+        AntiFloodEntity antiFloodEntity = AntiFloodEntity.builder()
+                .id(id)
+                .email(email)
+                .attempts(attempts)
+                .blockStart(blockStart)
+                .blockEnd(blockEnd)
+                .blockedLevel(blockedLevel)
+                .build();
+
+        antiFloodRepository.saveAndFlush(antiFloodEntity);
+    }
+
+    @Override
+    public AntiFloodDto findByEmail(final String email) {
+        return antiFloodRepository.findByEmail(email)
+                .map(AntiFloodEntity::toDto)
+                .orElse(null);
     }
 }

@@ -35,19 +35,12 @@ public class OtpEntity {
     @Column(name = "usado", nullable = false)
     private boolean used;
 
-    @Column(name = "tentativas", nullable = false)
-    private int attempts = 0;
-
-    public boolean isExpired() {
+    private boolean isExpired() {
         return createdAt.plusMinutes(5).isBefore(LocalDateTime.now());
     }
 
-    public boolean isValid() {
-        return !used && !isExpired() && attempts < 3;
-    }
-
-    public boolean isExceededAttempts() {
-        return attempts >= 3;
+    private boolean isValid() {
+        return !used && !isExpired();
     }
 
     public OtpDto toDto() {
@@ -56,9 +49,9 @@ public class OtpEntity {
                 .codeHash(this.codeHash)
                 .email(this.email)
                 .createdAt(this.createdAt)
+                .used(this.used)
                 .isExpired(this.isExpired())
                 .isValid(this.isValid())
-                .isExceededAttempts(this.isExceededAttempts())
                 .build();
     }
 }

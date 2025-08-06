@@ -104,18 +104,4 @@ public class GlobalControllerAdvice {
                 .contentType(APPLICATION_JSON)
                 .body(errorHttpResponseDto);
     }
-
-    @ExceptionHandler(OTPAlreadySentException.class)
-    public ResponseEntity<ErrorHttpResponseDto> handleOTPAlreadySentException(OTPAlreadySentException ex) {
-        ErrorHttpResponseDto errorHttpResponseDto = new ErrorHttpResponseDto(
-                BAD_REQUEST.toString(),
-                OTP_RESPONSE,
-                ex.getMessage(),
-                LocalDateTime.now()
-        );
-
-        return ResponseEntity.status(BAD_REQUEST)
-                .contentType(APPLICATION_JSON)
-                .body(errorHttpResponseDto);
-    }
 }

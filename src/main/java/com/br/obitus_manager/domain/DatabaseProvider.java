@@ -1,5 +1,6 @@
 package com.br.obitus_manager.domain;
 
+import com.br.obitus_manager.domain.anti_flood.AntiFloodDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
@@ -11,6 +12,7 @@ import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,9 +50,15 @@ public interface DatabaseProvider {
                                                     final Map<String, Map<String, Object>> advancedFilters,
                                                     final Pageable pageable, final String nameForOrderBy);
 
-    OtpDto saveOtp(String email, String hash);
+    void saveOtp(final UUID idOtp, final String email, final String hash, final LocalDateTime createdAt,
+                 final boolean used);
 
-    Optional<OtpDto> findTopByEmailOrderByCreatedAtDesc(String email);
+    Optional<OtpDto> findTopByEmailOrderByCreatedAtDesc(final String email);
 
-    Optional<OtpDto> findByEmailAndCodeHash(String email, String codeHash);
+    Optional<OtpDto> findByEmailAndCodeHash(final String email, final String codeHash);
+
+    void saveAntiFlood(final UUID id, final String email, final int attempts, final LocalDateTime blockStart,
+                  final LocalDateTime blockEnd, int blockedLevel);
+
+    AntiFloodDto findByEmail(final String email);
 }

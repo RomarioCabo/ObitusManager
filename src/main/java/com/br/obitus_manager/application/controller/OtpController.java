@@ -3,6 +3,7 @@ package com.br.obitus_manager.application.controller;
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
 import com.br.obitus_manager.domain.otp.OtpCreateRequest;
 import com.br.obitus_manager.domain.otp.OtpResponse;
+import com.br.obitus_manager.domain.otp.OtpValidateRequest;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,5 +38,26 @@ public interface OtpController {
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
-    ResponseEntity<OtpResponse> otp(@RequestBody @Valid OtpCreateRequest request);
+    ResponseEntity<OtpResponse> generate(@RequestBody @Valid OtpCreateRequest request);
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "OTP validado com sucesso.",
+            content = {@Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema())
+            })
+    @ApiResponse(
+            responseCode = "400",
+            description = "Bad request.",
+            content = {@Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorHttpResponseDto.class))
+            })
+    @PostMapping(
+            value = "otp/validate",
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE
+    )
+    ResponseEntity<Void> validate(@RequestBody @Valid OtpValidateRequest request);
 }

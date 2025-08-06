@@ -16,7 +16,7 @@ public class OtpDto {
     private String codeHash;
     private String email;
     private LocalDateTime createdAt;
+    private boolean used;
     private boolean isExpired;
     private boolean isValid;
-    private boolean isExceededAttempts;
 }
