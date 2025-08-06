@@ -46,7 +46,7 @@ public class OtpServiceImpl implements OtpService {
 
         String hash = DigestUtils.sha256Hex(request.getCode());
         OtpDto otp = databaseProvider.findByEmailAndCodeHash(request.getEmail(), hash)
-                .orElseThrow(() -> new BadRequestException("Código inválido ou inexistente."));
+                .orElseThrow(() -> new BadRequestException("Código inválido."));
 
         if (otp.isExpired()) throw new BadRequestException("Código expirado.");
         if (otp.isUsed()) throw new BadRequestException("Código já utilizado.");

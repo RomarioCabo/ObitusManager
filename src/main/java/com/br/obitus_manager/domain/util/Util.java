@@ -27,4 +27,26 @@ public class Util {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(patter);
         return localDateTime.format(formatter);
     }
+
+    public static String formatDuration(long totalSeconds) {
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        StringBuilder sb = new StringBuilder("Faltam ");
+
+        if (hours > 0) {
+            sb.append(hours).append(" hora").append(hours > 1 ? "s" : "");
+            sb.append(" e ");
+        }
+
+        if (minutes > 0 || hours > 0) {
+            sb.append(minutes).append(" minuto").append(minutes != 1 ? "s" : "");
+            sb.append(" e ");
+        }
+
+        sb.append(seconds).append(" segundo").append(seconds != 1 ? "s" : "");
+
+        return sb.toString();
+    }
 }

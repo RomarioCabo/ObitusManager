@@ -8,6 +8,7 @@ import com.br.obitus_manager.domain.util.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
@@ -28,8 +29,9 @@ public class AntiFloodServiceImpl implements AntiFloodService {
 
         // Se ainda está no tempo de bloqueio, bloqueia
         if (antiFlood.isBlocked() && antiFlood.getBlockEnd().isAfter(now)) {
-            throw new BadRequestException("Email bloqueado até: "
-                    + Util.formatterDate(antiFlood.getBlockEnd(), "dd/MM/yyyy HH:mm:ss"));
+            long seconds = Duration.between(now, antiFlood.getBlockEnd()).getSeconds();
+            String remaining = Util.formatDuration(seconds);
+            throw new BadRequestException("Email bloqueado. " + remaining + " restante(s).");
         }
 
         // Se passou o tempo de bloqueio, subir nível de bloqueio e resetar tentativas
