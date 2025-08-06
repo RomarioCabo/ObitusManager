@@ -71,9 +71,13 @@ public class AntiFloodServiceImpl implements AntiFloodService {
 
         if (level == 0) {
             antiFlood.setBlockEnd(now.plusMinutes(5));
-        } else if (level == 1) {
+        }
+
+        if (level == 1) {
             antiFlood.setBlockEnd(now.plusMinutes(10));
-        } else {
+        }
+
+        if (level >= 3) {
             antiFlood.setBlockEnd(now.plusHours(24));
             antiFlood.setBlockedLevel(0); // reiniciar ciclo após 3 bloqueios
         }
