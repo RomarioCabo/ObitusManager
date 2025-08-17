@@ -7,11 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
+
 @Configuration
 public class DataSourceConfig {
+
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.hikari")
     @Primary
+    @ConfigurationProperties(prefix = "spring.datasource.hikari")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }
