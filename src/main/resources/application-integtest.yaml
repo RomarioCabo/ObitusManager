@@ -16,3 +16,4 @@ spring:
     locations: classpath:db/migration
 
 base_url: "http://localhost:8081/"
+base_url_external: "http://localhost:8082/"

@@ -22,10 +22,8 @@ public interface OtpController {
     @ApiResponse(
             responseCode = "201",
             description = "OTP criado com sucesso.",
-            content = {@Content(
-                    mediaType = APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = OtpResponse.class))
-            })
+            content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema())}
+    )
     @ApiResponse(
             responseCode = "400",
             description = "Bad request.",
@@ -35,10 +33,9 @@ public interface OtpController {
             })
     @PostMapping(
             value = "otp/generate",
-            consumes = APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE
+            consumes = APPLICATION_JSON_VALUE
     )
-    ResponseEntity<OtpResponse> generate(@RequestBody @Valid OtpCreateRequest request);
+    ResponseEntity<Void> generate(@RequestBody @Valid OtpCreateRequest request);
 
     @ApiResponse(
             responseCode = "200",
