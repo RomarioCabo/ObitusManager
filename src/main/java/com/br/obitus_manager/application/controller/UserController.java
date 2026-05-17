@@ -1,9 +1,11 @@
 package com.br.obitus_manager.application.controller;
 
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -72,12 +73,16 @@ public interface UserController {
             @PathVariable("id_usuario") UUID userId
     );
 
+    @Operation(
+            summary = "Listar usuários (paginado)",
+            description = "Ordenação: name, email, createdAt (ex.: name,asc)."
+    )
     @ApiResponse(
             responseCode = "200",
-            description = "Usuários encontrados.",
+            description = "Página de usuários.",
             content = @Content(
                     mediaType = APPLICATION_JSON_VALUE,
-                    array = @ArraySchema(schema = @Schema(implementation = UserResponse.class))
+                    schema = @Schema(implementation = PageResponse.class)
             )
     )
     @ApiResponse(
@@ -89,7 +94,14 @@ public interface UserController {
             )
     )
     @GetMapping(value = "/usuarios", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<UserResponse>> findAllUsers();
+    ResponseEntity<PageResponse<UserResponse>> findAllUsers(
+            @Parameter(description = "Índice da página (0-based)", example = "0")
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @Parameter(description = "Tamanho da página", example = "10")
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @Parameter(description = "Ordenação: campo,direção", example = "name,asc")
+            @RequestParam(required = false) String sort
+    );
 
     @ApiResponse(
             responseCode = "200",

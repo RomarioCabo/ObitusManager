@@ -1,9 +1,9 @@
 package com.br.obitus_manager.domain.user.service;
 
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
@@ -11,7 +11,7 @@ public interface UserService {
 
     UserResponse findByEmail(final String email);
 
-    List<UserResponse> findAll();
+    PageResponse<UserResponse> findAll(final Integer page, final Integer size, final String sort);
 
     UserResponse findById(final UUID currentSessionUserId, final UUID userId);
 }

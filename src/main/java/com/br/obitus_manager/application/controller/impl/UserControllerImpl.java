@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.br.obitus_manager.domain.common.PageResponse;
+
 import java.util.UUID;
 
 @Slf4j
@@ -48,12 +49,16 @@ public class UserControllerImpl extends ControllerUtils implements UserControlle
     }
 
     @Override
-    public ResponseEntity<List<UserResponse>> findAllUsers() {
-        List<UserResponse> users = userService.findAll();
+    public ResponseEntity<PageResponse<UserResponse>> findAllUsers(
+            final Integer page,
+            final Integer size,
+            final String sort
+    ) {
+        PageResponse<UserResponse> users = userService.findAll(page, size, sort);
 
-        log.info("Users: {}", users);
+        log.info("Users page {}: {} item(s)", users.getPage(), users.getContent().size());
 
-        return ResponseEntity.ok(userService.findAll());
+        return ResponseEntity.ok(users);
     }
 
     @Override

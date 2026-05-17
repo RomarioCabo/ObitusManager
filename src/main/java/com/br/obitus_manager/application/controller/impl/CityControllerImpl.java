@@ -5,6 +5,7 @@ import com.br.obitus_manager.application.util.ControllerUtils;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.city.service.CityService;
+import com.br.obitus_manager.domain.common.PageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -47,12 +47,17 @@ public class CityControllerImpl extends ControllerUtils implements CityControlle
     }
 
     @Override
-    public ResponseEntity<List<CityResponse>> findAllCategoriesByIdUser(UUID idState) {
-        log.info("get city by state: {}", idState);
+    public ResponseEntity<PageResponse<CityResponse>> findAllCategoriesByIdUser(
+            final UUID idState,
+            final Integer page,
+            final Integer size,
+            final String sort
+    ) {
+        log.info("get cities by state: {}", idState);
 
-        List<CityResponse> response = cityService.findAllCities(idState);
+        PageResponse<CityResponse> response = cityService.findAllCities(idState, page, size, sort);
 
-        log.info("cities {}", response);
+        log.info("cities page {}: {} item(s)", response.getPage(), response.getContent().size());
 
         return ResponseEntity.ok(response);
     }

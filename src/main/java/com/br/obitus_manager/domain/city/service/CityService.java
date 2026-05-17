@@ -2,12 +2,17 @@ package com.br.obitus_manager.domain.city.service;
 
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
+import com.br.obitus_manager.domain.common.PageResponse;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface CityService {
     CityResponse upsert(UUID cityId, CityRequest request);
 
-    List<CityResponse> findAllCities(final UUID stateId);
+    PageResponse<CityResponse> findAllCities(
+            final UUID stateId,
+            final Integer page,
+            final Integer size,
+            final String sort
+    );
 }

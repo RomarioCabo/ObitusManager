@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -117,24 +118,14 @@ public class DatabaseProviderTest {
 
     @Test
     void shouldReturnAllUsers() {
-        Mockito.when(userRepository.findAllUsers()).thenReturn(Collections.singletonList(buildUserEntity()));
+        Mockito.when(userRepository.findAll(Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(buildUserEntity())));
 
-        List<UserResponse> result = databaseProvider.findAllUsers();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        Mockito.verify(userRepository, Mockito.times(1)).findAllUsers();
-    }
-
-    @Test
-    void shouldReturnNullForAllUsers() {
-        Mockito.when(userRepository.findAllUsers()).thenReturn(null);
-
-        List<UserResponse> result = databaseProvider.findAllUsers();
+        Page<UserResponse> result = databaseProvider.findAllUsers(PageRequest.of(0, 10));
 
         assertNotNull(result);
-        assertEquals(0, result.size());
-        Mockito.verify(userRepository, Mockito.times(1)).findAllUsers();
+        assertEquals(1, result.getTotalElements());
+        Mockito.verify(userRepository, Mockito.times(1)).findAll(Mockito.any(Pageable.class));
     }
 
     @Test
@@ -159,11 +150,11 @@ public class DatabaseProviderTest {
                         Mockito.any(Pageable.class), Mockito.anyString()))
                 .thenReturn(new PageImpl<>(List.of(buildStateEntity())));
 
-        List<StateResponse> result = databaseProvider.findAllStates(new HashMap<>(), new HashMap<>(),
+        Page<StateResponse> result = databaseProvider.findAllStates(new HashMap<>(), new HashMap<>(),
                 PageRequest.of(0, 10), "name");
 
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquals(1, result.getTotalElements());
 
         Mockito.verify(customRepository, Mockito.times(1))
                 .findWithFilters(eq(StateEntity.class), Mockito.anyMap(), Mockito.anyMap(), Mockito.any(Pageable.class),

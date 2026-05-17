@@ -1,6 +1,7 @@
 package com.br.obitus_manager.application.controller.impl;
 
 import com.br.obitus_manager.application.controller.StateController;
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.domain.state.service.StateService;
@@ -28,10 +29,15 @@ public class StateControllerImpl implements StateController {
     }
 
     @Override
-    public ResponseEntity<List<StateResponse>> findAllStatesByActive(Boolean active) {
-        List<StateResponse> states = stateService.findAllStatesByActive(active);
+    public ResponseEntity<PageResponse<StateResponse>> findAllStatesByActive(
+            final Boolean active,
+            final Integer page,
+            final Integer size,
+            final String sort
+    ) {
+        PageResponse<StateResponse> states = stateService.findAllStatesByActive(active, page, size, sort);
 
-        log.info("States: {}", states);
+        log.info("States page {}: {} item(s)", states.getPage(), states.getContent().size());
 
         return ResponseEntity.ok(states);
     }

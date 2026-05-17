@@ -75,12 +75,8 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     }
 
     @Override
-    public List<UserResponse> findAllUsers() {
-        return Optional.ofNullable(userRepository.findAllUsers())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(UserEntity::toModel)
-                .toList();
+    public Page<UserResponse> findAllUsers(final Pageable pageable) {
+        return userRepository.findAll(pageable).map(UserEntity::toModel);
     }
 
     @Override
@@ -103,18 +99,13 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     }
 
     @Override
-    public List<StateResponse> findAllStates(final Map<String, Object> filters,
+    public Page<StateResponse> findAllStates(final Map<String, Object> filters,
                                              final Map<String, Map<String, Object>> advancedFilters,
                                              final Pageable pageable, final String nameForOrderBy) {
         final Page<StateEntity> stateEntities
                 = customRepository.findWithFilters(StateEntity.class, filters, advancedFilters, pageable, nameForOrderBy);
 
-        return Optional.ofNullable(stateEntities)
-                .map(page -> page.getContent()
-                        .stream()
-                        .map(StateEntity::toModel)
-                        .toList())
-                .orElse(null);
+        return stateEntities.map(StateEntity::toModel);
     }
 
     @Override
@@ -134,18 +125,13 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     }
 
     @Override
-    public List<CityResponse> findAllCities(final Map<String, Object> filters,
+    public Page<CityResponse> findAllCities(final Map<String, Object> filters,
                                             final Map<String, Map<String, Object>> advancedFilters,
                                             final Pageable pageable, final String nameForOrderBy) {
         final Page<CityEntity> cityEntities
                 = customRepository.findWithFilters(CityEntity.class, filters, advancedFilters, pageable, nameForOrderBy);
 
-        return Optional.ofNullable(cityEntities)
-                .map(page -> page.getContent()
-                        .stream()
-                        .map(CityEntity::toModel)
-                        .toList())
-                .orElse(null);
+        return cityEntities.map(CityEntity::toModel);
     }
 
     @Override

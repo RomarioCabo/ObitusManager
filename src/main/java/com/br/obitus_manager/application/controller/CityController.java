@@ -3,7 +3,9 @@ package com.br.obitus_manager.application.controller;
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
+import com.br.obitus_manager.domain.common.PageResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,7 +14,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -85,16 +86,29 @@ public interface CityController {
             @PathVariable("id_cidade") UUID cityId
     );
 
+    @Operation(
+            summary = "Listar cidades (paginado)",
+            description = """
+                    Filtro opcional: id_estado. \
+                    Ordenação: name (ex.: name,asc)."""
+    )
     @ApiResponse(
             responseCode = "200",
-            description = "Cidade(s) encontrada.",
+            description = "Página de cidades.",
             content = @Content(
                     mediaType = APPLICATION_JSON_VALUE,
-                    array = @ArraySchema(schema = @Schema(implementation = CityResponse.class))
+                    schema = @Schema(implementation = PageResponse.class)
             )
     )
     @GetMapping(value = "/cidades", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<List<CityResponse>> findAllCategoriesByIdUser(
-            @RequestParam(name = "id_estado", required = false) UUID idState
+    ResponseEntity<PageResponse<CityResponse>> findAllCategoriesByIdUser(
+            @Parameter(description = "Filtrar por estado (UF)")
+            @RequestParam(name = "id_estado", required = false) UUID idState,
+            @Parameter(description = "Índice da página (0-based)", example = "0")
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @Parameter(description = "Tamanho da página", example = "10")
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @Parameter(description = "Ordenação: campo,direção", example = "name,asc")
+            @RequestParam(required = false) String sort
     );
 }

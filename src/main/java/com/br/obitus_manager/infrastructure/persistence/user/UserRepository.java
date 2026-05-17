@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -17,7 +16,4 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     @Query("SELECT ue FROM UserEntity ue WHERE ue.email = :email")
     UserEntity findUserByEmail(String email);
-
-    @Query("SELECT ue FROM UserEntity ue")
-    List<UserEntity> findAllUsers();
 }

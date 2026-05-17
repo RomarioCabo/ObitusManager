@@ -1,6 +1,7 @@
 package com.br.obitus_manager.integration.controller;
 
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 import com.br.obitus_manager.integration.support.IntegrationTest;
@@ -13,7 +14,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,15 +72,22 @@ class UserControllerTest extends IntegrationTestSupport {
     }
 
     @Test
-    void shouldReturnAllUsersWithSuccess() {
+    void shouldReturnPaginatedUsersWithSuccess() {
         createUser();
 
-        ResponseEntity<List<UserResponse>> response = buildResponse(null, FIND_ALL_USERS,
-                new ParameterizedTypeReference<>() {
-                });
+        ResponseEntity<PageResponse<UserResponse>> response = buildResponse(
+                null,
+                FIND_ALL_USERS + "?page=0&size=10",
+                new ParameterizedTypeReference<>() {}
+        );
 
         assertEquals(OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getTotalElements());
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals(0, response.getBody().getPage());
+        assertTrue(response.getBody().isFirst());
+        assertTrue(response.getBody().isLast());
     }
 
     @Test

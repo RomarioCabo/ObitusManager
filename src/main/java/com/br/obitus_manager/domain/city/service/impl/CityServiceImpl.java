@@ -6,8 +6,10 @@ import com.br.obitus_manager.domain.DatabaseProvider;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.city.service.CityService;
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.domain.util.PagedUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +38,18 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public List<CityResponse> findAllCities(final UUID stateId) {
-        final Pageable pageable = pagedUtil.getPageable(null, null);
+    public PageResponse<CityResponse> findAllCities(
+            final UUID stateId,
+            final Integer page,
+            final Integer size,
+            final String sort
+    ) {
+        final Pageable pageable = pagedUtil.getCityPageable(page, size, sort);
 
-        return databaseProvider.findAllCities(null, buildAdvancedFilters(stateId), pageable, "name");
+        final Page<CityResponse> result = databaseProvider.findAllCities(
+                null, buildAdvancedFilters(stateId), pageable, "name");
+
+        return PageResponse.from(result);
     }
 
     private static Map<String, Map<String, Object>> buildAdvancedFilters(final UUID stateId) {

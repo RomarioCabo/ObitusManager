@@ -18,22 +18,50 @@ public class PagedUtil {
             "nameDeceased", "dateDeceased", "dateTimeBurial"
     );
 
-    /**
-     * Sem {@code page}/{@code size} explícitos retorna não paginado (estados/cidades).
-     * Endpoints paginados devem usar {@link #getObituaryPageable} com parâmetros do controller.
-     */
-    public Pageable getPageable(final Integer pageIndex, final Integer pageSize) {
-        if (pageIndex == null && pageSize == null) {
-            return Pageable.unpaged();
-        }
-        return getPageable(pageIndex, pageSize, null, "nameDeceased");
+    private static final Set<String> STATE_SORT_FIELDS = Set.of("name", "acronym", "active");
+
+    private static final Set<String> CITY_SORT_FIELDS = Set.of("name");
+
+    private static final Set<String> USER_SORT_FIELDS = Set.of("name", "email", "createdAt");
+
+    public Pageable getObituaryPageable(
+            final Integer pageIndex,
+            final Integer pageSize,
+            final String sortParam
+    ) {
+        return getPageable(pageIndex, pageSize, sortParam, "nameDeceased", OBITUARY_SORT_FIELDS);
+    }
+
+    public Pageable getStatePageable(
+            final Integer pageIndex,
+            final Integer pageSize,
+            final String sortParam
+    ) {
+        return getPageable(pageIndex, pageSize, sortParam, "acronym", STATE_SORT_FIELDS);
+    }
+
+    public Pageable getCityPageable(
+            final Integer pageIndex,
+            final Integer pageSize,
+            final String sortParam
+    ) {
+        return getPageable(pageIndex, pageSize, sortParam, "name", CITY_SORT_FIELDS);
+    }
+
+    public Pageable getUserPageable(
+            final Integer pageIndex,
+            final Integer pageSize,
+            final String sortParam
+    ) {
+        return getPageable(pageIndex, pageSize, sortParam, "name", USER_SORT_FIELDS);
     }
 
     public Pageable getPageable(
             final Integer pageIndex,
             final Integer pageSize,
             final String sortParam,
-            final String defaultSortField
+            final String defaultSortField,
+            final Set<String> allowedSortFields
     ) {
         final int page = pageIndex != null && pageIndex >= 0 ? pageIndex : DEFAULT_PAGE;
         int size = pageSize != null && pageSize > 0 ? pageSize : DEFAULT_SIZE;
@@ -41,26 +69,22 @@ public class PagedUtil {
             size = MAX_SIZE;
         }
 
-        final Sort sort = resolveSort(sortParam, defaultSortField);
+        final Sort sort = resolveSort(sortParam, defaultSortField, allowedSortFields);
         return PageRequest.of(page, size, sort);
     }
 
-    public Pageable getObituaryPageable(
-            final Integer pageIndex,
-            final Integer pageSize,
-            final String sortParam
+    private Sort resolveSort(
+            final String sortParam,
+            final String defaultSortField,
+            final Set<String> allowedSortFields
     ) {
-        return getPageable(pageIndex, pageSize, sortParam, "nameDeceased");
-    }
-
-    private Sort resolveSort(final String sortParam, final String defaultSortField) {
         if (sortParam == null || sortParam.isBlank()) {
             return Sort.by(defaultSortField).ascending();
         }
 
         final String[] parts = sortParam.split(",", 2);
         String field = parts[0].trim();
-        if (!OBITUARY_SORT_FIELDS.contains(field)) {
+        if (!allowedSortFields.contains(field)) {
             field = defaultSortField;
         }
 

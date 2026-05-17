@@ -2,11 +2,15 @@ package com.br.obitus_manager.domain.user.service.impl;
 
 import com.br.obitus_manager.application.exception.BadRequestException;
 import com.br.obitus_manager.domain.DatabaseProvider;
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
 import com.br.obitus_manager.domain.user.service.UserService;
+import com.br.obitus_manager.domain.util.PagedUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     private final DatabaseProvider databaseProvider;
     private final PasswordEncoder passwordEncoder;
+    private final PagedUtil pagedUtil;
 
     private static final String specialCharacters = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~";
 
@@ -48,8 +53,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> findAll() {
-        return databaseProvider.findAllUsers();
+    public PageResponse<UserResponse> findAll(final Integer page, final Integer size, final String sort) {
+        final Pageable pageable = pagedUtil.getUserPageable(page, size, sort);
+        final Page<UserResponse> result = databaseProvider.findAllUsers(pageable);
+        return PageResponse.from(result);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.br.obitus_manager.integration.controller;
 
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.integration.support.IntegrationTest;
@@ -51,16 +52,31 @@ class StateControllerTest extends IntegrationTestSupport {
 
     @ParameterizedTest
     @MethodSource("activeFilterProvider")
-    void shouldReturnAllStatesWithFilterOrNot(Boolean active, int expectedQtdStates) {
-        ResponseEntity<List<StateResponse>> response = getStates(active);
+    void shouldReturnPaginatedStatesWithFilterOrNot(Boolean active, int expectedTotal) {
+        ResponseEntity<PageResponse<StateResponse>> response = getStates(active, 0, 100);
 
         assertEquals(OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(expectedQtdStates, response.getBody().size());
+        assertEquals(expectedTotal, response.getBody().getTotalElements());
+        assertEquals(expectedTotal, response.getBody().getContent().size());
+    }
+
+    @Test
+    void shouldReturnPaginatedListWithDefaultPageSize() {
+        ResponseEntity<PageResponse<StateResponse>> response = getStates(null, 0, 10);
+
+        assertEquals(OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(27, response.getBody().getTotalElements());
+        assertEquals(10, response.getBody().getContent().size());
+        assertEquals(0, response.getBody().getPage());
+        assertEquals(10, response.getBody().getSize());
+        assertTrue(response.getBody().isFirst());
+        assertFalse(response.getBody().isLast());
     }
 
     private void validatingWhetherStateOfAcreIsInactiveBeforeUpdate() {
-        StateResponse stateAcreBeforeUpdate = getStates(null).getBody().stream()
+        StateResponse stateAcreBeforeUpdate = getStates(null, 0, 100).getBody().getContent().stream()
                 .filter(state -> state.getId().equals(ACRE_STATE_ID))
                 .findFirst()
                 .orElse(null);
@@ -72,8 +88,8 @@ class StateControllerTest extends IntegrationTestSupport {
         assertFalse(stateAcreBeforeUpdate.getActive());
     }
 
-    private ResponseEntity<List<StateResponse>> getStates(Boolean active) {
-        return buildResponse(null, buildUrl(active), new ParameterizedTypeReference<>() {
+    private ResponseEntity<PageResponse<StateResponse>> getStates(Boolean active, int page, int size) {
+        return buildResponse(null, buildUrl(active, page, size), new ParameterizedTypeReference<>() {
         });
     }
 
@@ -84,12 +100,16 @@ class StateControllerTest extends IntegrationTestSupport {
                 .build();
     }
 
-    private String buildUrl(Boolean active) {
+    private String buildUrl(Boolean active, int page, int size) {
+        StringBuilder url = new StringBuilder(STATE_URL)
+                .append("?page=").append(page)
+                .append("&size=").append(size);
+
         if (active != null) {
-            return STATE_URL.concat("?ativo=").concat(active.toString());
+            url.append("&ativo=").append(active);
         }
 
-        return STATE_URL;
+        return url.toString();
     }
 
     private static Stream<Arguments> activeFilterProvider() {

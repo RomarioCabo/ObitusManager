@@ -3,6 +3,7 @@ package com.br.obitus_manager.integration.controller;
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
+import com.br.obitus_manager.domain.common.PageResponse;
 import com.br.obitus_manager.integration.support.IntegrationTest;
 import com.br.obitus_manager.integration.support.IntegrationTestSupport;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -68,7 +68,7 @@ class CityControllerTest extends IntegrationTestSupport {
         CityRequest bodyCreated = buildCityRequest("anyCity");
         createCity(bodyCreated);
 
-        ResponseEntity<List<CityResponse>> response = buildResponse(
+        ResponseEntity<PageResponse<CityResponse>> response = buildResponse(
                 null,
                 "/cidades".concat(buildQueryParameters(stateId)),
                 new ParameterizedTypeReference<>() {}
@@ -76,7 +76,8 @@ class CityControllerTest extends IntegrationTestSupport {
 
         assertEquals(OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
+        assertEquals(1, response.getBody().getTotalElements());
+        assertEquals(1, response.getBody().getContent().size());
     }
 
     @Test
@@ -121,10 +122,10 @@ class CityControllerTest extends IntegrationTestSupport {
     }
 
     private String buildQueryParameters(UUID stateId) {
-        if (stateId == null) {
-            return "";
+        final StringBuilder query = new StringBuilder("?page=0&size=100");
+        if (stateId != null) {
+            query.append("&id_estado=").append(stateId);
         }
-
-        return "?id_estado=" + stateId;
+        return query.toString();
     }
 }
