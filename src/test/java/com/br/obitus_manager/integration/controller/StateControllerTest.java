@@ -1,35 +1,26 @@
-package com.br.obitus_manager.application.controller;
+package com.br.obitus_manager.integration.controller;
 
-import com.br.obitus_manager.ObitusManagerApplication;
 import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
-import com.br.obitus_manager.init.Init;
+import com.br.obitus_manager.integration.support.IntegrationTest;
+import com.br.obitus_manager.integration.support.IntegrationTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
-@DirtiesContext(classMode = BEFORE_CLASS)
-@ContextConfiguration(classes = ObitusManagerApplication.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@ActiveProfiles("integtest")
-class StateControllerTest extends Init {
+@IntegrationTest
+class StateControllerTest extends IntegrationTestSupport {
 
     private static final String STATE_URL = "/estados";
 

@@ -1,36 +1,27 @@
-package com.br.obitus_manager.application.controller;
+package com.br.obitus_manager.integration.controller;
 
-import com.br.obitus_manager.ObitusManagerApplication;
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
 import com.br.obitus_manager.domain.user.UserRequest;
 import com.br.obitus_manager.domain.user.UserResponse;
-import com.br.obitus_manager.init.Init;
+import com.br.obitus_manager.integration.support.IntegrationTest;
+import com.br.obitus_manager.integration.support.IntegrationTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
-@DirtiesContext(classMode = BEFORE_CLASS)
-@ContextConfiguration(classes = ObitusManagerApplication.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@ActiveProfiles("integtest")
-class UserControllerTest extends Init {
+@IntegrationTest
+class UserControllerTest extends IntegrationTestSupport {
 
     private static final String CREATE_USER_URL = "/usuario";
     private static final String FIND_ALL_USERS = "/usuarios";

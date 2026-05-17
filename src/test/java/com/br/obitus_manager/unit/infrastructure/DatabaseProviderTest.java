@@ -1,4 +1,4 @@
-package com.br.obitus_manager.infrastructure;
+package com.br.obitus_manager.unit.infrastructure;
 
 import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;

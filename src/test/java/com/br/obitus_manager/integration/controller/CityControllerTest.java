@@ -1,20 +1,16 @@
-package com.br.obitus_manager.application.controller;
+package com.br.obitus_manager.integration.controller;
 
-import com.br.obitus_manager.ObitusManagerApplication;
 import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
-import com.br.obitus_manager.init.Init;
+import com.br.obitus_manager.integration.support.IntegrationTest;
+import com.br.obitus_manager.integration.support.IntegrationTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,17 +18,12 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
-@DirtiesContext(classMode = BEFORE_CLASS)
-@ContextConfiguration(classes = ObitusManagerApplication.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@ActiveProfiles("integtest")
-class CityControllerTest extends Init {
+@IntegrationTest
+class CityControllerTest extends IntegrationTestSupport {
 
     private static final String CITY_URL = "/cidade";
 

@@ -1,5 +1,6 @@
-package com.br.obitus_manager.domain.util;
+package com.br.obitus_manager.unit.domain.util;
 
+import com.br.obitus_manager.domain.util.ImageMimeUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

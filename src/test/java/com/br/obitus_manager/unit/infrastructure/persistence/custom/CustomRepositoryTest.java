@@ -1,4 +1,4 @@
-package com.br.obitus_manager.infrastructure.persistence.custom;
+package com.br.obitus_manager.unit.infrastructure.persistence.custom;
 
 import com.br.obitus_manager.infrastructure.persistence.custom.impl.CustomRepositoryImpl;
 import com.br.obitus_manager.infrastructure.persistence.obituary_notice.ObituaryNoticeEntity;
