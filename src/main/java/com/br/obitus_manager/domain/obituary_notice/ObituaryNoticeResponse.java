@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ObituaryNoticeResponse {
     private UUID idObituaryNotice;
+    private UUID idCity;
     private String nameDeceased;
     private Integer age;
     private LocalDate dateDeceased;
@@ -21,5 +22,7 @@ public class ObituaryNoticeResponse {
     private String burialLocation;
     private LocalDateTime dateTimeBurial;
     private String briefBiographyDeceased;
+    private Boolean hasPhoto;
+  /** URL do endpoint GET /nota_falecimento/{id}/foto (sem bytes da imagem). */
     private String urlImage;
 }

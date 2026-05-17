@@ -2,11 +2,14 @@ package com.br.obitus_manager.domain.obituary_notice.service.impl;
 
 import com.br.obitus_manager.application.exception.EntityNotFoundException;
 import com.br.obitus_manager.domain.DatabaseProvider;
+import com.br.obitus_manager.domain.common.PageResponse;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticePhoto;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
 import com.br.obitus_manager.domain.obituary_notice.service.ObituaryNoticeService;
 import com.br.obitus_manager.domain.util.PagedUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,19 +34,29 @@ public class ObituaryNoticeServiceImpl implements ObituaryNoticeService {
     }
 
     @Override
-    public byte[] getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId) {
+    public ObituaryNoticePhoto getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId) {
         return databaseProvider.getPhotoByIdObituaryNoticeId(obituaryNoticeId);
     }
 
     @Override
-    public List<ObituaryNoticeResponse> find(final String nameDeceased, final UUID idCity, LocalDate dateDeceased) {
+    public PageResponse<ObituaryNoticeResponse> find(
+            final String nameDeceased,
+            final UUID idCity,
+            final LocalDate dateDeceased,
+            final Integer page,
+            final Integer size,
+            final String sort
+    ) {
         final Map<String, Object> filters = new HashMap<>();
-        Optional.ofNullable(nameDeceased).ifPresent(id -> filters.put("nameDeceased", nameDeceased));
-        Optional.ofNullable(dateDeceased).ifPresent(date -> filters.put("dateDeceased", dateDeceased));
+        Optional.ofNullable(nameDeceased).ifPresent(value -> filters.put("nameDeceased", value));
+        Optional.ofNullable(dateDeceased).ifPresent(date -> filters.put("dateDeceased", date));
 
-        final Pageable pageable = pagedUtil.getPageable(null, null);
+        final Pageable pageable = pagedUtil.getObituaryPageable(page, size, sort);
 
-        return databaseProvider.findObituaryNotice(filters, buildAdvancedFilters(idCity), pageable, "nameDeceased");
+        final Page<ObituaryNoticeResponse> result = databaseProvider.findObituaryNotice(
+                filters, buildAdvancedFilters(idCity), pageable, "nameDeceased");
+
+        return PageResponse.from(result);
     }
 
     private static Map<String, Map<String, Object>> buildAdvancedFilters(final UUID idCity) {

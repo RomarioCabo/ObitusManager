@@ -2,8 +2,10 @@ package com.br.obitus_manager.infrastructure.persistence.obituary_notice;
 
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import com.br.obitus_manager.domain.util.ImageMimeUtils;
 import com.br.obitus_manager.infrastructure.persistence.city.CityEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Formula;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,25 +55,60 @@ public class ObituaryNoticeEntity {
     @Column(name = "biografia_resumida_falecido")
     private String briefBiographyDeceased;
 
+    @Basic(fetch = FetchType.LAZY)
     @Lob
     @Column(name = "foto", columnDefinition = "OID")
     private byte[] photo;
 
+    /** Indica presença de foto sem carregar o LOB (PostgreSQL OID). */
+    @Formula("(foto IS NOT NULL)")
+    private boolean hasPhoto;
+
+    @Column(name = "foto_content_type", length = 64)
+    private String photoContentType;
+
+    /**
+     * Atualiza foto a partir do Base64 do request.
+     * <ul>
+     *   <li>{@code null} — não altera foto (uso com merge no update)</li>
+     *   <li>vazio — remove a foto</li>
+     *   <li>com dados — grava bytes e MIME</li>
+     * </ul>
+     */
     public void setPhotoBase64(String base64) {
-        if (base64 != null && !base64.isBlank()) {
-            // remove prefixo tipo "data:image/jpeg;base64," se houver
-            if (base64.contains(",")) {
-                base64 = base64.split(",")[1];
-            }
-            this.photo = Base64.getDecoder().decode(base64.getBytes(StandardCharsets.UTF_8));
+        if (base64 == null) {
+            return;
+        }
+        if (base64.isBlank()) {
+            this.photo = null;
+            this.photoContentType = null;
+            return;
+        }
+
+        String mimeFromPrefix = ImageMimeUtils.parseMimeFromDataUrlPrefix(base64);
+        if (base64.contains(",")) {
+            base64 = base64.split(",", 2)[1];
+        }
+        this.photo = Base64.getDecoder().decode(base64.getBytes(StandardCharsets.UTF_8));
+        if (ImageMimeUtils.isSupportedImageMime(mimeFromPrefix)) {
+            this.photoContentType = mimeFromPrefix;
+        } else {
+            this.photoContentType = ImageMimeUtils.detectFromBytes(this.photo);
         }
     }
 
-    public String getUrlImageBase64(final String baseUrl) {
-        if (this.photo != null && this.photo.length > 0) {
-            return baseUrl.concat("api/v1/nota_falecimento/").concat(this.id.toString()).concat("/foto");
+    public String resolvePhotoContentType() {
+        if (photoContentType != null && !photoContentType.isBlank()) {
+            return photoContentType;
         }
-        return null;
+        return ImageMimeUtils.detectFromBytes(photo);
+    }
+
+    public String buildPhotoUrl(final String baseUrl) {
+        if (!hasPhoto || this.id == null) {
+            return null;
+        }
+        return baseUrl.concat("api/v1/nota_falecimento/").concat(this.id.toString()).concat("/foto");
     }
 
     public ObituaryNoticeEntity(UUID idObituaryNotice, CityEntity cityEntity, ObituaryNoticeRequest request) {
@@ -90,6 +127,7 @@ public class ObituaryNoticeEntity {
     public ObituaryNoticeResponse toModel(final String baseUrl) {
         return ObituaryNoticeResponse.builder()
                 .idObituaryNotice(this.id)
+                .idCity(this.cityEntity != null ? this.cityEntity.getId() : null)
                 .nameDeceased(this.nameDeceased)
                 .age(this.age)
                 .dateDeceased(this.dateDeceased)
@@ -97,7 +135,8 @@ public class ObituaryNoticeEntity {
                 .burialLocation(this.burialLocation)
                 .dateTimeBurial(this.dateTimeBurial)
                 .briefBiographyDeceased(this.briefBiographyDeceased)
-                .urlImage(this.getUrlImageBase64(baseUrl))
+                .hasPhoto(this.hasPhoto)
+                .urlImage(this.buildPhotoUrl(baseUrl))
                 .build();
     }
 }

@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     private final DatabaseProvider databaseProvider;
     private final PasswordEncoder passwordEncoder;
 
-    private final String specialCharacters = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~";
+    private static final String specialCharacters = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~";
 
     @Override
     public UserResponse upsert(final UUID currentSessionUserId, final UserRequest request, final UUID userId) {

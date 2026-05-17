@@ -2,8 +2,11 @@ package com.br.obitus_manager.application.controller.impl;
 
 import com.br.obitus_manager.application.controller.ObituaryNoticeController;
 import com.br.obitus_manager.application.util.ControllerUtils;
+import com.br.obitus_manager.domain.common.PageResponse;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticePhoto;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import com.br.obitus_manager.domain.util.ImageMimeUtils;
 import com.br.obitus_manager.domain.obituary_notice.service.ObituaryNoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,20 +55,31 @@ public class ObituaryNoticeControllerImpl extends ControllerUtils implements Obi
 
     @Override
     public ResponseEntity<byte[]> getPhoto(UUID obituaryNoticeId) {
+        ObituaryNoticePhoto photo = obituaryNoticeService.getPhotoByIdObituaryNoticeId(obituaryNoticeId);
 
-        byte[] photo = obituaryNoticeService.getPhotoByIdObituaryNoticeId(obituaryNoticeId);
-
-        if (photo != null) {
+        if (photo != null && photo.getBytes() != null && photo.getBytes().length > 0) {
+            String contentType = photo.getContentType();
+            if (contentType == null || contentType.isBlank()) {
+                contentType = ImageMimeUtils.detectFromBytes(photo.getBytes());
+            }
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
-            return new ResponseEntity<>(photo, headers, HttpStatus.OK);
+            headers.setContentType(MediaType.parseMediaType(contentType));
+            return new ResponseEntity<>(photo.getBytes(), headers, HttpStatus.OK);
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<List<ObituaryNoticeResponse>> find(String nameDeceased, UUID idCity, LocalDate dateDeceased) {
-        return ResponseEntity.ok(obituaryNoticeService.find(nameDeceased, idCity, dateDeceased));
+    public ResponseEntity<PageResponse<ObituaryNoticeResponse>> find(
+            String nameDeceased,
+            UUID idCity,
+            LocalDate dateDeceased,
+            Integer page,
+            Integer size,
+            String sort
+    ) {
+        return ResponseEntity.ok(
+                obituaryNoticeService.find(nameDeceased, idCity, dateDeceased, page, size, sort));
     }
 }

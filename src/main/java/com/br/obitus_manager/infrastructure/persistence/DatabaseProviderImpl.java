@@ -4,6 +4,7 @@ import com.br.obitus_manager.domain.DatabaseProvider;
 import com.br.obitus_manager.domain.anti_flood.AntiFloodDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticePhoto;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
 import com.br.obitus_manager.domain.otp.OtpDto;
@@ -152,30 +153,39 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     public ObituaryNoticeResponse saveObituaryNotice(final ObituaryNoticeRequest request, final UUID obituaryNoticeId) {
         return cityRepository.findById(request.getIdCity())
                 .map(cityEntity -> {
-                    ObituaryNoticeEntity obituaryNoticeEntity = new ObituaryNoticeEntity(obituaryNoticeId, cityEntity, request);
+                    ObituaryNoticeEntity obituaryNoticeEntity =
+                            new ObituaryNoticeEntity(obituaryNoticeId, cityEntity, request);
+
+                    if (obituaryNoticeId != null && request.getImageBase64() == null) {
+                        obituaryNoticeRepository.findById(obituaryNoticeId).ifPresent(existing -> {
+                            obituaryNoticeEntity.setPhoto(existing.getPhoto());
+                            obituaryNoticeEntity.setPhotoContentType(existing.getPhotoContentType());
+                        });
+                    }
+
                     return obituaryNoticeRepository.saveAndFlush(obituaryNoticeEntity).toModel(baseUrl);
                 })
                 .orElse(null);
     }
 
     @Override
-    public byte[] getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId) {
-        return obituaryNoticeRepository.findById(obituaryNoticeId).map(ObituaryNoticeEntity::getPhoto).orElse(null);
+    public ObituaryNoticePhoto getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId) {
+        return obituaryNoticeRepository.findById(obituaryNoticeId)
+                .filter(entity -> entity.getPhoto() != null && entity.getPhoto().length > 0)
+                .map(entity -> new ObituaryNoticePhoto(
+                        entity.getPhoto(),
+                        entity.resolvePhotoContentType()))
+                .orElse(null);
     }
 
     @Override
-    public List<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
-                                                           final Map<String, Map<String, Object>> advancedFilters,
-                                                           final Pageable pageable, final String nameForOrderBy) {
+    public Page<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
+                                                         final Map<String, Map<String, Object>> advancedFilters,
+                                                         final Pageable pageable, final String nameForOrderBy) {
         final Page<ObituaryNoticeEntity> obituaryNoticeEntities
                 = customRepository.findWithFilters(ObituaryNoticeEntity.class, filters, advancedFilters, pageable, nameForOrderBy);
 
-        return Optional.ofNullable(obituaryNoticeEntities)
-                .map(page -> page.getContent()
-                        .stream()
-                        .map(entity -> entity.toModel(baseUrl))
-                        .toList())
-                .orElse(null);
+        return obituaryNoticeEntities.map(entity -> entity.toModel(baseUrl));
     }
 
     @Override

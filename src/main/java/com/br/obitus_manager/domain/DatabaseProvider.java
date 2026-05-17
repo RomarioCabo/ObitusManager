@@ -3,8 +3,10 @@ package com.br.obitus_manager.domain;
 import com.br.obitus_manager.domain.anti_flood.AntiFloodDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
+import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticePhoto;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeRequest;
 import com.br.obitus_manager.domain.obituary_notice.ObituaryNoticeResponse;
+import org.springframework.data.domain.Page;
 import com.br.obitus_manager.domain.otp.OtpDto;
 import com.br.obitus_manager.domain.state.StateRequest;
 import com.br.obitus_manager.domain.state.StateResponse;
@@ -44,9 +46,9 @@ public interface DatabaseProvider {
 
     ObituaryNoticeResponse saveObituaryNotice(final ObituaryNoticeRequest request, final UUID obituaryNoticeId);
 
-    byte[] getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId);
+    ObituaryNoticePhoto getPhotoByIdObituaryNoticeId(final UUID obituaryNoticeId);
 
-    List<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
+    Page<ObituaryNoticeResponse> findObituaryNotice(final Map<String, Object> filters,
                                                     final Map<String, Map<String, Object>> advancedFilters,
                                                     final Pageable pageable, final String nameForOrderBy);
 
