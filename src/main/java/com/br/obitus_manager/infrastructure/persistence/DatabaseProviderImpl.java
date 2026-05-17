@@ -125,6 +125,16 @@ public class DatabaseProviderImpl implements DatabaseProvider {
     }
 
     @Override
+    public Optional<CityResponse> findActiveCityByNameAndStateAcronym(
+            final String name,
+            final String stateAcronym
+    ) {
+        return cityRepository
+                .findActiveByNameAndStateAcronym(name, stateAcronym)
+                .map(CityEntity::toModel);
+    }
+
+    @Override
     public Page<CityResponse> findAllCities(final Map<String, Object> filters,
                                             final Map<String, Map<String, Object>> advancedFilters,
                                             final Pageable pageable, final String nameForOrderBy) {

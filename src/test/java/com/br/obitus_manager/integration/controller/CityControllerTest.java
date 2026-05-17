@@ -4,6 +4,8 @@ import com.br.obitus_manager.application.exception.ErrorHttpResponseDto;
 import com.br.obitus_manager.domain.city.CityRequest;
 import com.br.obitus_manager.domain.city.CityResponse;
 import com.br.obitus_manager.domain.common.PageResponse;
+import com.br.obitus_manager.domain.state.StateRequest;
+import com.br.obitus_manager.domain.state.StateResponse;
 import com.br.obitus_manager.integration.support.IntegrationTest;
 import com.br.obitus_manager.integration.support.IntegrationTestSupport;
 import org.junit.jupiter.api.Test;
@@ -11,8 +13,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -71,13 +76,45 @@ class CityControllerTest extends IntegrationTestSupport {
         ResponseEntity<PageResponse<CityResponse>> response = buildResponse(
                 null,
                 "/cidades".concat(buildQueryParameters(stateId)),
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<PageResponse<CityResponse>>() {}
         );
 
         assertEquals(OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().getTotalElements());
         assertEquals(1, response.getBody().getContent().size());
+    }
+
+    @Test
+    void shouldFindCityByNameAndStateAcronymWithSuccess() {
+        activateAcreState();
+
+        CityRequest body = buildCityRequest("Rio Branco");
+        createCity(body);
+
+        ResponseEntity<CityResponse> response = buildResponse(
+                null,
+                "/cidade/buscar?nome=Rio Branco&uf=AC",
+                new ParameterizedTypeReference<>() {
+                }
+        );
+
+        assertEquals(OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Rio Branco", response.getBody().getName());
+        assertEquals("AC", response.getBody().getState().getAcronym());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenCityByNameAndUfDoesNotExist() {
+        ResponseEntity<ErrorHttpResponseDto> response = buildResponse(
+                null,
+                "/cidade/buscar?nome=CidadeInexistente&uf=AC",
+                new ParameterizedTypeReference<>() {
+                }
+        );
+
+        assertEquals(NOT_FOUND, response.getStatusCode());
     }
 
     @Test
@@ -127,5 +164,24 @@ class CityControllerTest extends IntegrationTestSupport {
             query.append("&id_estado=").append(stateId);
         }
         return query.toString();
+    }
+
+    /** GET /cidade/buscar exige estado atuante (ativo=true); seed do Acre vem inativo. */
+    private void activateAcreState() {
+        StateRequest request = StateRequest.builder()
+                .id(ACRE_STATE_ID)
+                .active(true)
+                .build();
+
+        ResponseEntity<List<StateResponse>> response = buildResponse(
+                Collections.singletonList(request),
+                HttpMethod.PUT,
+                null,
+                "/estados",
+                new ParameterizedTypeReference<>() {
+                }
+        );
+
+        assertEquals(OK, response.getStatusCode());
     }
 }

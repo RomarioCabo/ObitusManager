@@ -40,6 +40,8 @@ public interface DatabaseProvider {
 
     boolean existsCityByNameAndState(String name, UUID stateId);
 
+    Optional<CityResponse> findActiveCityByNameAndStateAcronym(String name, String stateAcronym);
+
     Page<CityResponse> findAllCities(final Map<String, Object> filters,
                                        final Map<String, Map<String, Object>> advancedFilters,
                                        final Pageable pageable, final String nameForOrderBy);

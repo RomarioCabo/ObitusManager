@@ -87,6 +87,37 @@ public interface CityController {
     );
 
     @Operation(
+            summary = "Buscar cidade ativa por nome e UF",
+            description = """
+                    Retorna a cidade cujo nome coincide (ignorando maiúsculas) com [nome] \
+                    e cuja UF coincide com [uf], somente se o estado estiver ativo (atuante). \
+                    Útil para geolocalização no app mobile."""
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Cidade encontrada.",
+            content = @Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = CityResponse.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Cidade não encontrada.",
+            content = @Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorHttpResponseDto.class)
+            )
+    )
+    @GetMapping(value = "/cidade/buscar", produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<CityResponse> findByNameAndStateAcronym(
+            @Parameter(description = "Nome da cidade", example = "Fortaleza")
+            @RequestParam(name = "nome") String name,
+            @Parameter(description = "Sigla do estado (UF)", example = "CE")
+            @RequestParam(name = "uf") String stateAcronym
+    );
+
+    @Operation(
             summary = "Listar cidades (paginado)",
             description = """
                     Filtro opcional: id_estado. \

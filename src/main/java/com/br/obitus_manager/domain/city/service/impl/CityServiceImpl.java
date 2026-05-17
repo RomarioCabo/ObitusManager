@@ -52,6 +52,21 @@ public class CityServiceImpl implements CityService {
         return PageResponse.from(result);
     }
 
+    @Override
+    public CityResponse findActiveByNameAndStateAcronym(
+            final String name,
+            final String stateAcronym
+    ) {
+        if (name == null || name.isBlank() || stateAcronym == null || stateAcronym.isBlank()) {
+            throw new BadRequestException("Nome da cidade e UF são obrigatórios");
+        }
+
+        return databaseProvider
+                .findActiveCityByNameAndStateAcronym(name.trim(), stateAcronym.trim())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cidade não encontrada para a localização informada"));
+    }
+
     private static Map<String, Map<String, Object>> buildAdvancedFilters(final UUID stateId) {
         final Map<String, Map<String, Object>> advancedFilters = new HashMap<>();
         Optional.ofNullable(stateId).ifPresent(id -> advancedFilters.put("stateEntity", buildMapFilter(stateId)));

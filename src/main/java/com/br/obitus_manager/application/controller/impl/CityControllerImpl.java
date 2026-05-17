@@ -47,6 +47,18 @@ public class CityControllerImpl extends ControllerUtils implements CityControlle
     }
 
     @Override
+    public ResponseEntity<CityResponse> findByNameAndStateAcronym(
+            final String name,
+            final String stateAcronym
+    ) {
+        log.info("find city by name={} uf={}", name, stateAcronym);
+
+        CityResponse response = cityService.findActiveByNameAndStateAcronym(name, stateAcronym);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
     public ResponseEntity<PageResponse<CityResponse>> findAllCategoriesByIdUser(
             final UUID idState,
             final Integer page,

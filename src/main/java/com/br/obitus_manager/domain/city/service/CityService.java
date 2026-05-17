@@ -15,4 +15,6 @@ public interface CityService {
             final Integer size,
             final String sort
     );
+
+    CityResponse findActiveByNameAndStateAcronym(String name, String stateAcronym);
 }

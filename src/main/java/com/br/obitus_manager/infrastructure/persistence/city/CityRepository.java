@@ -21,4 +21,13 @@ public interface CityRepository extends JpaRepository<CityEntity, UUID> {
 
     @Query("SELECT c FROM CityEntity c WHERE c.stateEntity.id = :stateId")
     List<CityEntity> findAllByState(final UUID stateId);
+
+    @Query("""
+            SELECT c FROM CityEntity c
+            JOIN c.stateEntity s
+            WHERE UPPER(TRIM(c.name)) = UPPER(TRIM(:name))
+            AND UPPER(TRIM(s.acronym)) = UPPER(TRIM(:stateAcronym))
+            AND s.active = true
+            """)
+    Optional<CityEntity> findActiveByNameAndStateAcronym(String name, String stateAcronym);
 }
